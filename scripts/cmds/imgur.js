@@ -1,23 +1,40 @@
-let axios = require("axios"); 
-module.exports = {
-  config: {
-    name: "imgur",
-    aliases: [`imagegur`],
-    version: "1.0",
-    author: "otiney",
-    countDown: 0,
-    role: 0,
-    shortDescription: "upload any images in imgur server..",
-    longDescription: "upload any images in imgur server..",
-    category: "utility",
-    guide: "{pn} reply or add link of image"
-  },
-
-  onStart: async function ({ api, event }) {
-    let linkanh = event.messageReply.attachments[0].url || args.join(" ");
-    if(!linkanh) return api.sendMessage('Please reply or enter the link 1 image!!!', event.threadID, event.messageID)
-    let res = await axios.get(`https://API-Web.miraiofficials123.repl.co/imgur?link=${encodeURIComponent(linkanh)}&apikey=18102004`);
-    let img = res.data.data;
-  return api.sendMessage(`${img}`, event.threadID, event.messageID)
+module.exports.config = {
+  name: "imgur",
+  version: "1.0.0",
+  permission: 0,
+  credits: "Nayan",
+  description: "",
+  prefix: true, 
+  category: "user", 
+  usages: "Link",
+  cooldowns: 5,
+  dependencies: {
+    "imgur-upload-api": ''
   }
 };
+
+module.exports.run = async function({ api, event, args }) {
+  const linkanh = event.messageReply.attachments[0].url || args.join(" ");
+    const axios = require("axios")
+    const request = require("request")
+    const fs = require("fs-extra")
+  var imgur = require('imgur-upload-api'),
+  path = require('path');
+  const myClientID = 'Client-ID 3fb071726880bbb'
+  imgur.setClientID(myClientID);
+
+  imgur.upload(linkanh, function (err,res) {
+    console.log(res)
+    const link = res.data.link;
+    const type = res.data.type;
+    var msg = [];
+    {
+        msg += `TYPE: ${type}\nLINK: ${link}`
+    }
+    return api.sendMessage({
+        body: msg
+
+    }, event.threadID, event.messageID);
+  });
+
+               }
